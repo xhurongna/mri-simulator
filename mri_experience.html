@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MRI 磁共振模拟体验</title>
+<style>
+:root{--ink:#173042;--muted:#607989;--line:#d9e9e7;--blue:#087fad;--blue-soft:#eaf8fb;--green:#219b7a;--amber:#fff8dc;--amber-line:#ead58b;--bg:#f4faf9}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{min-height:100vh;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;padding:16px;letter-spacing:0}
+.brand{font-size:24px}
+.topbar .brand{font-size:24px}
+#selectView .page-title{font-size:19px;font-weight:700;margin-bottom:12px}
+.select-note{margin:-4px 0 14px;color:var(--muted);font-size:12px;line-height:1.6;text-align:left}
+#simView .sim-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.sim-video-btn{border:1px solid var(--line);background:#fff;color:#38506b;border-radius:6px;padding:7px 10px;font-size:13px;font-weight:650;white-space:nowrap;cursor:pointer}
+.sim-video-btn:hover,.sim-video-btn:focus-visible{border-color:#72a6dc;color:var(--blue);outline:none}
+button,a{font:inherit}.app{width:100%;max-width:760px;margin:0 auto;background:#fff;border:1px solid #e4eaf1;box-shadow:0 10px 30px rgba(25,48,80,.08);padding:22px}.topbar{display:flex;align-items:center;justify-content:space-between;min-height:42px;margin-bottom:18px}.brand{font-size:21px;font-weight:750}.back-btn,.icon-btn{border:1px solid var(--line);background:#fff;color:#38506b;min-height:42px;padding:8px 12px;border-radius:8px;cursor:pointer}.view[hidden]{display:none}.page-title{font-size:24px;line-height:1.35;margin-bottom:5px}.lead{font-size:15px;color:var(--muted);line-height:1.6;margin-bottom:18px}.exam-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.exam-card{border:1px solid var(--line);background:#fff;border-radius:8px;padding:12px;text-align:left;cursor:pointer;min-height:174px;display:flex;flex-direction:column;transition:border-color .15s,box-shadow .15s}.exam-card:hover,.exam-card:focus-visible{border-color:#4b85c8;box-shadow:0 4px 14px rgba(34,93,164,.12);outline:none}.exam-art{height:96px;background:#f4f8fd;border-radius:6px;display:flex;align-items:center;justify-content:center;margin-bottom:9px;overflow:hidden}.exam-art svg{width:100%;height:92px}.exam-name{font-size:17px;font-weight:700}.exam-time{font-size:13px;color:var(--muted);margin-top:3px}.notice{background:var(--amber);border:1px solid var(--amber-line);border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.65;margin:14px 0}.detail-head{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center;margin-bottom:16px}.detail-art{height:112px;background:#f4f8fd;border-radius:8px}.detail-art svg{width:100%;height:112px}.fact{color:var(--muted);font-size:14px;line-height:1.7}.video-wrap{background:#17283b;border-radius:8px;overflow:hidden;aspect-ratio:16/9;position:relative}.video-wrap iframe{width:100%;height:100%;border:0}.video-fallback{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f5f7fa;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:7px;font-size:12px;color:var(--muted)}.source-link{color:var(--blue);font-weight:650;white-space:nowrap}.section{margin-top:18px}.section h2{font-size:18px;margin-bottom:10px}.steps{list-style:none;display:grid;gap:7px}.steps li{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:#f7f9fc;border-radius:8px;font-size:14px;line-height:1.55}.step-no{width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--blue-soft);color:var(--blue);font-weight:700;flex:none}.actions{display:flex;gap:9px;margin-top:16px}.primary,.secondary{border-radius:8px;min-height:48px;padding:11px 16px;font-weight:700;cursor:pointer}.primary{border:1px solid var(--blue);background:var(--blue);color:#fff;flex:1}.secondary{border:1px solid var(--line);background:#fff;color:#38506b}.sim-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.sim-head .page-title{margin:0}.actual-chip{font-size:12px;color:#486078;background:#edf2f7;padding:5px 8px;border-radius:6px}.status{background:#2f6fb7;color:#fff;border-radius:8px;padding:16px}.status-summary{display:grid;align-items:center;min-height:50px}.status-summary[hidden]{display:none}.status-phase{font-size:21px;font-weight:750;line-height:1.35;text-align:left}.speech-caption{display:-webkit-box;min-height:66px;margin:12px 0 0;padding:10px 12px;border-radius:6px;background:rgba(255,255,255,.2);font-size:14px;line-height:1.6;text-align:left;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}.speech-caption[hidden]{display:none}.status-action{margin-top:12px}.start-btn,.status-reset{width:100%;min-height:50px;border:0;background:#fff;color:#194f8f;border-radius:8px;font-size:17px;font-weight:750;padding:11px 16px;cursor:pointer}.progress-row{display:flex;align-items:center;gap:10px;margin-top:12px}.progress-meta{min-width:105px;display:grid;gap:3px;text-align:right}.time-summary{font-size:13px;opacity:.9;white-space:nowrap}.track{height:7px;background:rgba(255,255,255,.22);border-radius:5px;overflow:hidden;flex:1}.bar{height:100%;width:0;background:#fff;transition:width .4s}.pct{font-size:12px;width:34px;text-align:right}.hearing{margin:0 0 12px}.hearing-top{margin-bottom:8px}.hearing-top h2{font-size:17px;margin:0}.hearing-controls{display:flex;align-items:center}.hearing-options{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;background:#eaf4ff;padding:6px;border-radius:8px}.hearing-btn{display:grid;grid-template-columns:16px 1fr;align-items:center;gap:7px;border:1px solid #c8daed;background:rgba(255,255,255,.62);border-radius:6px;padding:8px;color:#4f6480;font-size:13px;font-weight:650;text-align:left;cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s}.hearing-btn::before{content:"";width:14px;height:14px;border:2px solid #91a9c2;border-radius:50%;background:#fff}.hearing-btn:hover,.hearing-btn:focus-visible{border-color:#72a6dc;background:#fff;outline:none}.hearing-btn small{display:block;margin-top:2px;font-size:11px;font-weight:500;color:inherit}.hearing-btn.active{border-color:#2f7ac6;background:#fff;color:#174f8e;box-shadow:0 2px 7px rgba(20,48,80,.12)}.hearing-btn.active::before{border:4px solid #2f7ac6}.hearing-note{font-size:12px;color:var(--muted);line-height:1.55;margin-top:4px}.timeline{margin-top:18px}.timeline h2{font-size:17px;margin-bottom:8px}.tl-item{display:flex;gap:10px;align-items:center;padding:9px 10px;border-radius:8px;opacity:.43}.tl-item.active{background:var(--blue-soft);opacity:1}.tl-item.done{opacity:.7}.tl-dot{width:17px;height:17px;border:2px solid #cbd5e1;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:10px}.tl-item.active .tl-dot{background:var(--blue);border-color:var(--blue)}.tl-item.done .tl-dot{background:var(--green);border-color:var(--green);color:#fff}.tl-text{display:flex;justify-content:space-between;align-items:center;gap:8px;flex:1;font-size:14px}.tl-time{color:var(--muted);font-size:12px}.small-note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:14px;text-align:center}
+.progress-segments{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;flex:1}.progress-segment{height:9px;border-radius:3px;background:rgba(255,255,255,.24)}.progress-segment.current{background:#fff}.progress-segment.done{background:#43c59e}.progress-count{min-width:96px;text-align:right;font-size:13px;font-weight:700;white-space:nowrap}.tl-item.actual-step{opacity:1}.tl-item.actual-step .tl-dot{border-color:#7fa5cf;color:#225da4;font-weight:700}.timeline-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}.timeline-head h2{margin:0;font-size:17px}.timeline-meta{display:flex;align-items:baseline;justify-content:flex-end;gap:10px;text-align:right}.timeline-meta span{color:var(--muted);font-size:12px;white-space:nowrap}.timeline-total{display:flex;justify-content:flex-end;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}.timeline-total span{color:var(--muted);font-size:11px;font-weight:500;white-space:nowrap}
+.actual-process-item{padding:13px 0;border-top:1px solid var(--line)}.actual-process-item:first-child{border-top:0}.actual-process-item.not-simulated{opacity:1}.actual-process-item.not-simulated .actual-step-main{color:var(--muted);font-weight:500}.actual-process-item.not-simulated .actual-step-number{border-color:#b5c1cf;color:#718197}.actual-process-item.simulated .actual-step-main{color:var(--ink);font-weight:650}.actual-step-main{display:grid;grid-template-columns:24px 1fr;gap:9px;align-items:start;color:#43546a;font-size:14px;line-height:1.6}.actual-step-number{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border:1px solid #8eafd3;border-radius:50%;color:var(--blue);font-size:11px;font-weight:700}.mapping-stages.vertical{display:grid;gap:6px;margin:9px 0 0 11px;padding-left:20px;border-left:2px solid #d5e2f1}.mapping-stage{display:grid;grid-template-columns:18px 1fr auto;gap:9px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:5px;color:var(--muted);background:#fff}.stage-marker{width:16px;height:16px;border:2px solid #cbd5e1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;line-height:1;color:transparent}.mapping-stage small{font-size:11px;font-weight:500;color:inherit;white-space:nowrap}.mapping-stage.active{border-color:#4b85c8;background:var(--blue-soft);color:var(--blue);font-weight:700}.mapping-stage.active .stage-marker{background:var(--blue);border-color:var(--blue)}.mapping-stage.done{border-color:#8bc9ba;background:#e7f6f1;color:var(--green)}.mapping-stage.done .stage-marker{background:var(--green);border-color:var(--green);color:#fff}.status-phase[hidden],.status-reset[hidden],.start-btn[hidden]{display:none!important}
+.hearing-title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.loud-warning{display:inline-flex;align-items:center;color:#9b3d28;background:#fff0e8;border:1px solid #efb49e;border-radius:5px;padding:3px 7px;font-size:12px}.hearing-options{max-width:520px;background:#eaf4ff}.prompt-setting{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:14px;padding:13px 0 0 12px;border-top:1px solid var(--line);border-left:3px solid #d59a00}.prompt-copy strong{display:block;font-size:14px}.prompt-copy span{display:block;margin-top:4px;padding:5px 8px;border-radius:4px;background:#fff4cc;color:#765400;font-size:13px;font-weight:650;line-height:1.5}.voice-toggle{display:flex;align-items:center;cursor:pointer;flex:none}.voice-toggle input{position:absolute;opacity:0;pointer-events:none}.voice-switch{position:relative;width:44px;height:26px;border-radius:13px;background:#b8c7d8;flex:none;transition:background .15s}.voice-switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(23,34,53,.25);transition:transform .15s}.voice-toggle input:checked+.voice-switch{background:#2f7ac6}.voice-toggle input:checked+.voice-switch::after{transform:translateX(18px)}.voice-toggle input:focus-visible+.voice-switch{outline:3px solid rgba(47,122,198,.25);outline-offset:2px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.sim-head{display:block}.actual-chip{display:block;margin-top:3px;background:none;padding:0;color:var(--muted);font-size:13px}
+.hearing-btn{grid-template-columns:12px 1fr}.hearing-btn::before{width:12px;height:12px;border:1px solid #91a9c2;border-radius:50%}.hearing-btn.active::before{border:3px solid #2f7ac6}.prompt-setting{max-width:520px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;padding:8px 10px;background:#f7f9fc;border:1px solid #e1e8f0;border-radius:6px}.prompt-copy strong{font-size:13px;font-weight:650}.prompt-copy span{display:block;margin-top:2px;padding:2px 5px;border-radius:3px;background:#fff4cc;color:#765400;font-size:11px;font-weight:600;line-height:1.45}.voice-switch{width:36px;height:22px;border-radius:11px}.voice-switch::after{top:3px;left:3px;width:16px;height:16px}.voice-toggle input:checked+.voice-switch::after{transform:translateX(14px)}
+.sim-head{display:block;margin-bottom:18px;padding-bottom:0;border-bottom:0}.hearing{margin:0 0 20px}.hearing-options{max-width:520px;background:none;padding:0;gap:18px;border-radius:0}.hearing-btn{border:0;border-bottom:2px solid transparent;background:transparent;border-radius:0;padding:8px 4px 9px;box-shadow:none}.hearing-btn::before{content:"✓";display:flex;align-items:center;justify-content:center;width:12px;height:12px;border:0;border-radius:0;background:none;color:transparent;font-size:12px;font-weight:800;opacity:0}.hearing-btn:hover,.hearing-btn:focus-visible{border-bottom-color:#72a6dc;background:#f6faff}.hearing-btn.active{border-color:transparent;border-bottom-color:#2f7ac6;background:transparent;box-shadow:none}.hearing-btn.active::before{border:0;opacity:1;color:#2f7ac6}.prompt-setting{max-width:520px;display:flex;margin-top:16px;padding:10px 0 0;background:none;border:0;border-top:1px solid #e1e8f0;border-radius:0}.timeline{margin-top:30px;padding-top:4px}
+.hearing-options{gap:8px}.hearing-btn{grid-template-columns:1fr;border:1px solid #d4dfeb;background:#fff;border-radius:6px;padding:9px 10px}.hearing-btn::before{display:none}.hearing-btn:hover,.hearing-btn:focus-visible{border-color:#72a6dc;background:#f8fbff}.hearing-btn.active{border-color:#2f7ac6;background:#f4f9ff;color:#174f8e}.status{background:#e8f3ff;color:#174f8e;border:1px solid #bfd6ee}.status-heading{min-width:0}.phase-state{display:flex;align-items:center;gap:6px;margin-top:5px;color:#55799f;font-size:12px;font-weight:650}.phase-state::before{content:"";width:7px;height:7px;border-radius:50%;background:#2f7ac6;animation:statusPulse 1.1s ease-in-out infinite}.phase-state[hidden]{display:none}.speech-caption{background:#fff;color:#294f78}.progress-segment{background:#c5d8ee}.progress-segment.current{background:#2f7ac6;animation:stagePulse 1.1s ease-in-out infinite}.progress-segment.done{background:#43a88d}.start-btn,.status-reset{border:1px solid #b8cfe8;background:#fff}
+.status-main{display:grid;min-height:50px}.status-main .status-summary,.status-main .status-action{grid-area:1/1}.status-main .status-action{margin:0}
+.sound-choice-intro{margin:4px 0 16px;color:var(--muted);font-size:14px;line-height:1.6}.sound-choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.sound-choice{min-height:92px;padding:14px;border:1px solid var(--line);border-radius:7px;background:#fff;color:#40546d;text-align:left;cursor:pointer}.sound-choice strong,.sound-choice small{display:block}.sound-choice strong{font-size:16px;color:var(--ink)}.sound-choice small{margin-top:5px;font-size:12px;line-height:1.45}.sound-choice:hover,.sound-choice:focus-visible{border-color:#72a6dc;background:#f7fbff;outline:none}.sound-choice.active{border-color:#2f7ac6;background:#edf6ff;box-shadow:0 0 0 1px #2f7ac6}.sound-choice.active strong{color:#174f8e}.sound-choice .loud-warning{display:block;width:max-content;margin-top:5px}.sound-selection-note{margin-top:12px;color:var(--muted);font-size:12px;line-height:1.6}.sound-selection-actions{display:flex;margin-top:18px}.sound-selection-actions .primary{width:100%}.sound-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;padding:10px 12px;border:1px solid #d8e4f0;border-radius:6px;background:#f7faff}.sound-summary-copy{display:flex;align-items:baseline;gap:8px;min-width:0}.sound-summary-copy span{color:var(--muted);font-size:12px}.sound-summary-copy strong{color:#174f8e;font-size:14px}.sound-edit-btn{min-height:36px;padding:6px 10px;border:1px solid #9fc1e4;border-radius:6px;background:#fff;color:#225da4;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer}.sound-edit-btn:hover,.sound-edit-btn:focus-visible{border-color:#4b85c8;outline:none}.sound-dialog{width:min(520px,calc(100% - 28px));margin:auto;padding:0;border:0;border-radius:8px;background:#fff;box-shadow:0 18px 55px rgba(20,39,64,.28)}.sound-dialog::backdrop{background:rgba(23,34,53,.48)}.sound-dialog-inner{padding:20px}.sound-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.sound-dialog-head h2{font-size:19px}.dialog-close{width:38px;height:38px;border:0;border-radius:50%;background:#eef3f8;color:#38506b;font-size:22px;line-height:1;cursor:pointer}.progress-track-wrap{position:relative;flex:1;padding-top:0}.progress-segment{height:26px;display:flex;align-items:center;justify-content:center;border-radius:4px}.progress-segment.sound-stage{background:#bdd8f4;color:#174f8e}.progress-segment.silent-stage{background:#edf1f5;color:#748296;opacity:1}.stage-sound-icon{font-size:10px;font-weight:800;line-height:1}.progress-segment.current{background:#2f7ac6;color:#fff;animation:stagePulse 1.1s ease-in-out infinite}.progress-segment.done{background:#43a88d;color:#fff}
+.status{position:relative}.status-heading{padding-right:58px}.stage-reset{position:absolute;top:12px;right:12px;min-height:30px;padding:4px 9px;border:1px solid #9fc1e4;border-radius:6px;background:rgba(255,255,255,.72);color:#315d8d;font-size:12px;font-weight:650;cursor:pointer}.stage-reset:hover,.stage-reset:focus-visible{background:#fff;border-color:#4b85c8;outline:none}.stage-reset[hidden]{display:none}
+.sim-back-link{display:inline-flex;min-height:auto;padding:3px 0;border:0;border-radius:0;background:transparent;color:#526b86;font-size:13px}.sim-back-link:hover,.sim-back-link:focus-visible{color:var(--blue);text-decoration:underline;outline:none}.sim-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 12px;padding:0;border:0}.actual-chip{display:block;margin:0;padding:0;background:transparent;color:var(--muted);font-size:13px}.sim-video-btn{padding:4px 0;border:0;background:transparent;color:#486078;font-size:12px}.hearing{margin:0 0 8px}.prompt-setting{max-width:none;margin:0;padding:8px 0;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent}.prompt-copy{min-width:0}.prompt-copy strong{font-size:12px}.prompt-copy span{display:block;margin-top:2px;padding:0;background:transparent;color:var(--muted);font-size:11px;font-weight:500;line-height:1.45}.sound-summary{justify-content:flex-start;gap:4px;margin:0 0 8px;padding:0;border:0;border-radius:0;background:transparent}.sound-summary-copy{gap:4px}.sound-summary-copy span,.sound-summary-copy strong{font-size:12px;font-weight:500}.sound-edit-btn{min-height:auto;padding:2px 0;border:0;border-radius:0;background:transparent;color:var(--blue);font-size:12px}.sound-edit-btn::before{content:"· ";color:var(--muted)}.sound-edit-btn:hover,.sound-edit-btn:focus-visible{text-decoration:underline;outline:none}.inline-sound-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-width:430px;margin:0 0 12px}.inline-sound-options[hidden]{display:none}.inline-sound-options .sound-choice{min-height:48px;padding:7px 10px}.inline-sound-options .sound-choice strong{font-size:13px}.inline-sound-options .sound-choice small{margin-top:1px;font-size:11px}.progress-legend{display:flex;justify-content:flex-start;gap:18px;margin:10px 0 5px;color:#314b68;font-size:13px;font-weight:650}.progress-legend span{display:inline-flex;align-items:center;gap:7px}.progress-legend span::before{content:"";width:20px;height:10px;border-radius:2px;background:#4b85c8}.progress-legend .silent::before{background:#fff;border:2px solid #6f8093}.progress-segment{height:16px}.progress-segment.sound-stage{background:#70a8df}.progress-segment.silent-stage{background:#fff;border:2px solid #6f8093}.progress-segment.current.sound-stage{background:#225da4}.progress-segment.current.silent-stage{background:#fff;border-color:#225da4}.progress-segment.done.silent-stage{background:#fff;border-color:#43a88d;box-shadow:inset 0 -4px #43a88d}.status-reset{width:auto;min-height:40px;margin-left:auto;padding:8px 14px;font-size:14px}.status-action{display:flex}
+.prompt-setting{display:block;padding:10px 0 0}.voice-control{display:inline-flex;align-items:center;gap:10px;padding:5px 7px 5px 12px;border:1px solid #b9cde3;border-radius:999px;background:#edf5ff;color:#174f8e}.voice-label{font-size:13px;font-weight:700}.prompt-copy span{margin-top:6px}.progress-row{flex-direction:row;align-items:flex-end;gap:12px;margin-top:8px}.progress-count{order:1;min-width:68px;padding-bottom:1px;text-align:right;font-size:12px;font-weight:650;white-space:nowrap}.progress-track-wrap{order:0;width:auto;min-width:0;flex:1;padding-top:18px}.progress-segment{position:relative}.progress-segment.sound-stage::before{content:"🔊";position:absolute;left:50%;bottom:calc(100% + 3px);transform:translateX(-50%);font-size:10px;line-height:1}.speech-caption{margin-right:80px}.timeline{margin-top:32px;padding-top:20px;border-top:1px solid var(--line)}
+.sound-edit-btn{display:inline-flex;align-items:center;gap:5px;min-height:34px;padding:6px 10px;border:1px solid #9fc1e4;border-radius:6px;background:#edf5ff;color:#225da4;font-size:12px;font-weight:700;line-height:1;cursor:pointer}.sound-edit-btn::before{content:none}.sound-edit-btn::after{content:"▾";font-size:12px;transition:transform .15s}.sound-edit-btn[aria-expanded="true"]::after{transform:rotate(180deg)}.sound-edit-btn:hover,.sound-edit-btn:focus-visible{border-color:#4b85c8;background:#e2f0ff;text-decoration:none;outline:3px solid rgba(47,122,198,.16);outline-offset:1px}
+.experience-settings{margin:0 0 12px;padding:10px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.settings-toolbar{display:flex;align-items:center;gap:20px}.settings-toolbar .prompt-setting{flex:none;margin:0;padding:0;border:0}.voice-control{display:inline-flex;align-items:center;gap:9px;padding:0;border:0;border-radius:0;background:transparent;color:#314b68}.voice-label{font-size:12px;font-weight:650}.voice-control .voice-switch{display:block;width:32px;height:18px;margin:0;padding:0;border-radius:9px}.voice-control .voice-switch::after{top:2px;left:2px;width:14px;height:14px}.voice-control input:checked+.voice-switch::after{transform:translateX(14px)}.settings-toolbar .sound-summary{margin:0 0 0 auto}.prompt-note{display:block;margin-top:6px;color:var(--muted);font-size:11px;font-weight:500;line-height:1.45}.experience-settings .inline-sound-options{margin:10px 0 0}
+.app{border-color:#dcebe8;box-shadow:0 10px 30px rgba(32,100,95,.08)}.exam-art,.detail-art{background:#f0f9fa}.exam-card:hover,.exam-card:focus-visible{border-color:#63b9c9;box-shadow:0 4px 14px rgba(8,127,173,.1)}.status{background:#edf9fb;color:#174d66;border:1px solid #b9dfe5}.speech-caption{background:#fff;color:#214f63;border:1px solid #d8ebed}.start-btn,.status-reset{border-color:#a9d3dc;color:#086b91}.phase-state{color:#4d7f8d}.phase-state::before{background:#22a7a0}.progress-segment.sound-stage{background:#76c8d1}.progress-segment.current.sound-stage{background:#0786a8}.progress-segment.silent-stage{background:#fff;border-color:#78909c}.progress-segment.current.silent-stage{border-color:#0786a8}.progress-segment.done.sound-stage,.progress-segment.done.silent-stage{background:#28a47d;border-color:#28a47d;box-shadow:none}.voice-toggle input:checked+.voice-switch{background:#22a7a0}.sound-edit-btn{border-color:#9ed8d0;background:#f0fbfa;color:#157d75}.sound-edit-btn:hover,.sound-edit-btn:focus-visible{border-color:#4db7aa;background:#e5f8f5;outline-color:rgba(34,167,160,.16)}.sound-choice.active{border-color:#22a7a0;background:#effbf8;box-shadow:0 0 0 1px #22a7a0}.sound-choice.active strong{color:#157d75}.mapping-stage.active{border-color:#63b9c9;background:#eef9fb;color:#087fad}.mapping-stage.done{border-color:#7bcdb9;background:#ecf9f5;color:#219b7a}.stage-reset{border-color:#9ed8d0;color:#157d75}
+@keyframes stagePulse{0%,100%{opacity:.58;box-shadow:0 0 0 0 rgba(47,122,198,0)}50%{opacity:1;box-shadow:0 0 0 3px rgba(47,122,198,.14)}}
+@keyframes statusPulse{0%,100%{opacity:.35}50%{opacity:1}}
+@media(max-width:560px){body{padding:0;background:#fff}.app{border:0;box-shadow:none;padding:18px 14px;max-width:none}.page-title{font-size:22px}.exam-card{min-height:158px;padding:9px}.exam-art{height:82px}.exam-art svg{height:78px}.exam-name{font-size:15px}.detail-head{grid-template-columns:96px 1fr}.detail-art,.detail-art svg{height:96px}.actions{flex-direction:column}.secondary{width:100%}.video-fallback{align-items:flex-start;flex-direction:column}.sim-head{align-items:center;gap:8px}.hearing-options{max-width:none}.prompt-setting{gap:10px}.prompt-copy span{font-size:11px}.sound-choice-grid{grid-template-columns:1fr}.sound-choice{min-height:72px}.sound-summary{align-items:baseline}.settings-toolbar{gap:12px;flex-wrap:wrap}.settings-toolbar .sound-summary{margin-left:0}.progress-row{align-items:flex-end;gap:8px}.progress-count{min-width:62px;font-size:11px}.speech-caption{margin-right:70px}.progress-segments{gap:3px}.timeline-head{align-items:flex-start}.timeline-meta{flex-direction:column;align-items:flex-end;gap:2px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar"><div class="brand" id="brandTitle">MRI 磁共振模拟体验</div></header>
+
+  <section class="view" id="selectView">
+    <h1 class="page-title">您要做哪项 MRI 磁共振检查？</h1>
+    <p class="select-note">本页面仅做参考，实际请以医院通知为准。</p>
+    <div class="exam-grid" id="examGrid"></div>
+  </section>
+
+  <section class="view" id="detailView" hidden>
+    <button class="back-btn" id="detailBack">← 返回上一步</button>
+    <div style="height:14px"></div>
+    <h1 class="page-title">MRI 检查介绍</h1>
+    <p class="lead">以下内容介绍通用 MRI 检查环境与基本流程，不针对具体检查部位。</p>
+    <div class="video-wrap" id="videoWrap"></div>
+    <div class="video-fallback" id="videoFallback"><span>视频无法播放时，可在原发布平台观看。</span><a class="source-link" id="videoLink" target="_blank" rel="noopener">前往原平台观看 →</a></div>
+    <div class="section"><h2>通用检查流程</h2><ol class="steps" id="stepList"></ol></div>
+    <div class="notice"><strong>请提前知道：</strong>实际检查时通常不会逐阶段播报。长时间没有提示通常不代表异常，请保持不动并耐心等待。</div>
+    <div class="actions"><button class="primary" id="detailStart">开始模拟体验</button><button class="secondary" id="detailChoose">选择其他检查</button></div>
+  </section>
+
+  <section class="view" id="simView" hidden>
+    <button class="back-btn sim-back-link" id="simBack">← 返回上一步</button>
+    <div class="sim-head"><span class="actual-chip" id="actualChip"></span><button class="sim-video-btn" id="watchVideo">了解MRI检查</button></div>
+    <div class="experience-settings">
+      <div class="settings-toolbar">
+        <div class="prompt-setting"><div class="prompt-copy"><label class="voice-control voice-toggle" for="voiceToggle" aria-label="开启或关闭阶段说明语音"><strong class="voice-label">语音播报</strong><input id="voiceToggle" type="checkbox" checked><i class="voice-switch" aria-hidden="true"></i></label></div></div>
+        <div class="sound-summary"><div class="sound-summary-copy"><span>音效：</span><strong id="currentSoundMode">原声（较响）</strong></div><button class="sound-edit-btn" id="reselectSound" aria-expanded="false" aria-controls="inlineSoundOptions">更换音效</button></div>
+      </div>
+      <p class="prompt-note">仅用于模拟体验；真实检查进入扫描舱后通常没有逐阶段语音提示。</p>
+      <div class="inline-sound-options" id="inlineSoundOptions" hidden aria-label="选择模拟音效">
+        <button class="sound-choice active" data-sound-choice="normal" aria-pressed="true"><strong>原声</strong><small>较响</small></button>
+        <button class="sound-choice" data-sound-choice="cotton" aria-pressed="false"><strong>棉花</strong><small>稍小</small></button>
+        <button class="sound-choice" data-sound-choice="earplugs" aria-pressed="false"><strong>耳塞</strong><small>更小</small></button>
+      </div>
+    </div>
+    <div class="status"><button class="stage-reset" id="resetRunning" hidden>重置</button>
+      <div class="status-main"><div class="status-summary" id="statusSummary" hidden><div class="status-heading"><div class="status-phase" id="statusPhase" hidden></div><div class="phase-state" id="phaseState" hidden></div></div></div><div class="status-action"><button class="start-btn" id="startBtn">▶ 立即体验</button><button class="status-reset" id="statusReset" hidden>↻ 重新体验</button></div></div>
+      <div class="progress-row" id="progressRow"><div class="progress-track-wrap" id="progressTrackWrap"><div class="progress-segments" id="progressSegments" role="progressbar" aria-label="进度" aria-valuemin="0" aria-valuemax="7" aria-valuenow="0"></div></div><span class="progress-count" id="progressCount">进度 0/7</span></div>
+      <div class="speech-caption" id="speechCaption" role="status" aria-live="polite" hidden></div>
+    </div>
+    <div class="timeline"><div class="timeline-head"><h2>体验与实际过程对照</h2><div class="timeline-meta"><span>具体以医院安排为准</span></div></div><div id="processComparisonList"></div><div class="timeline-total"><span id="processTotalTime">耗时总计</span></div></div>
+  </section>
+</main>
+
+<script>
+const DEFAULT_VIDEO = {
+  embed:'https://player.bilibili.com/player.html?bvid=BV1oVL46GEVY&page=1&high_quality=1',
+  url:'https://www.bilibili.com/video/BV1oVL46GEVY/',
+  source:'国内科普视频，浙大一院良渚分院协助拍摄'
+};
+
+function buildSequences(type){
+  const special = {
+    cardiac:['配合短暂屏气','继续保持不动'], abdomen:['配合短暂屏气','继续平稳呼吸'],
+    pelvis:['保持身体不动','继续平稳呼吸'], breast:['俯卧保持不动','继续平稳呼吸'],
+    cervical:['保持头颈不动','尽量避免吞咽'], lumbar:['保持腰部不动','继续平稳呼吸'],
+    'whole-spine':['完成第一段扫描','继续保持全身不动'], brain:['保持头部不动','继续平稳呼吸'],
+    general:['保持身体不动','继续平稳呼吸']
+  }[type];
+  return [
+    {id:'quiet',name:'准备进入扫描舱',duration:8,announce:'检查床会缓慢移动，请放松身体。'},
+    {id:'hum',name:'确认扫描位置',duration:12,announce:'会先确认检查位置，请保持不动。'},
+    {id:'knock',name:'第一组扫描声音',duration:18,announce:'接下来会听到有节奏的敲击声。'},
+    {id:'alternate',name:special[0],duration:20,announce:`接下来请${special[0]}。`},
+    {id:'loud',name:'较响的一组声音',duration:18,announce:'接下来的声音会比较响，这是机器正常工作的声音。'},
+    {id:'rapid',name:special[1],duration:14,announce:`最后一组，请${special[1]}。`},
+    {id:'done',name:'体验完成',duration:3,announce:'模拟体验完成，可以放松身体了。'}
+  ];
+}
+
+const EXAMS = [
+  {id:'brain',title:'头部 MRI',actualTime:'约 30–60 分钟',position:'头部通常先进舱，头部会放入专用线圈。',organ:'brain',steps:['取下金属物品，完成安全确认','仰卧躺下，戴好听力保护用品','头部放入专用线圈并适当固定','检查床缓慢进入扫描舱','听到多组扫描声音并保持头部不动','检查结束后离开扫描舱'],processMap:{prepare:[0,1,2],enter:[3],scan:[4],finish:[5]},sequences:buildSequences('brain')},
+  {id:'cardiac',title:'心脏 MRI',actualTime:'约 45–90 分钟',position:'通常仰卧，心脏位于扫描舱中心。',organ:'heart',steps:['按医院要求做好饮食和用药准备','取下金属物品并完成安全确认','胸前可能粘贴心电电极并放置线圈','检查床进入扫描舱','按提示进行多次短暂屏气','部分检查可能注射造影剂后继续扫描'],processMap:{prepare:[0,1,2],enter:[3],scan:[4,5],finish:[5]},sequences:buildSequences('cardiac')},
+  {id:'breast',title:'乳腺 MRI',actualTime:'约 30–60 分钟',position:'通常俯卧在乳腺专用线圈上。',organ:'breast',steps:['确认是否需要造影剂及相关准备','取下金属物品并更换检查服','俯卧在专用检查床上调整位置','检查床进入扫描舱','保持身体和胸部不动','完成扫描，按医护人员提示起身'],processMap:{prepare:[0,1,2],enter:[3],scan:[4],finish:[5]},sequences:buildSequences('breast')},
+  {id:'abdomen',title:'腹部 MRI',actualTime:'约 30–60 分钟',position:'通常仰卧，扫描中可能需要多次屏气。',organ:'abdomen',steps:['按医院通知确认是否需要空腹','取下金属物品并完成安全确认','仰卧躺下，腹部放置线圈','检查床进入扫描舱','听到提示时进行短暂屏气','部分检查可能使用药物或造影剂'],processMap:{prepare:[0,1,2],enter:[3],scan:[4,5],finish:[5]},sequences:buildSequences('abdomen')},
+  {id:'pelvis',title:'盆腔 MRI',actualTime:'约 30–60 分钟',position:'通常仰卧，盆腔位于扫描舱中心。',organ:'pelvis',steps:['按医院通知确认饮水、憋尿或用药要求','取下金属物品并完成安全确认','仰卧躺下并调整检查位置','检查床进入扫描舱','保持骨盆和双腿不动','部分检查可能注射造影剂后继续扫描'],processMap:{prepare:[0,1,2],enter:[3],scan:[4,5],finish:[5]},sequences:buildSequences('pelvis')},
+  {id:'cervical',title:'颈椎 MRI',actualTime:'约 20–40 分钟',position:'头颈部通常先进舱，并使用头颈线圈。',organ:'cervical',steps:['取下金属物品并完成安全确认','仰卧躺下，头颈部放入线圈','使用软垫帮助保持颈部稳定','检查床进入扫描舱','保持头颈不动并尽量避免吞咽','扫描结束后按提示起身'],processMap:{prepare:[0,1,2],enter:[3],scan:[4],finish:[5]},sequences:buildSequences('cervical')},
+  {id:'lumbar',title:'腰椎 MRI',actualTime:'约 20–40 分钟',position:'通常仰卧，腰椎位于扫描舱中心。',organ:'lumbar',steps:['取下金属物品并完成安全确认','仰卧躺下并垫好腰腿','调整位置，使腰椎位于扫描中心','检查床进入扫描舱','保持腰背和双腿不动','扫描结束后缓慢起身'],processMap:{prepare:[0,1,2],enter:[3],scan:[4],finish:[5]},sequences:buildSequences('lumbar')},
+  {id:'whole-spine',title:'全脊柱 MRI',actualTime:'约 45–90 分钟',position:'通常仰卧，需要分多组完成较大范围扫描。',organ:'spine',steps:['取下金属物品并完成安全确认','仰卧躺下，调整头颈和身体位置','检查床进入扫描舱','按不同脊柱区域分组扫描','过程中可能移动检查床重新定位','全部扫描结束后按提示起身'],processMap:{prepare:[0,1],enter:[2],scan:[3,4],finish:[5]},sequences:buildSequences('whole-spine')},
+  {id:'general',title:'其他 MRI 检查',hint:'不知道选哪个，就选这里',actualTime:'约 20–60 分钟',position:'不同部位的摆位会有差异，这里先了解共同的进舱和扫描过程。',organ:'general',steps:['取下金属物品，完成安全确认','按医护人员安排躺好并戴好听力保护用品','医护人员帮助调整检查部位和线圈','检查床缓慢进入扫描舱','听到多组扫描声音并保持身体不动','检查结束后按提示离开扫描舱'],processMap:{prepare:[0,1,2],enter:[3],scan:[4],finish:[5]},sequences:buildSequences('general')}
+];
+
+const $=id=>document.getElementById(id);
+let selected=EXAMS[0];
+let activeUtterance=null;
+let pendingSpeechFinish=null;
+let voiceEnabled=true;
+let state={running:false,finished:false,index:0,elapsed:0,stageElapsed:0,timer:null,timerFallback:null,announcing:false,token:0};
+
+function bodyIllustration(organ,title){
+  const marks={
+    general:'<path d="M45 43c6-7 40-7 46 0l9 49c2 10-6 16-16 16H52c-10 0-18-6-16-16Z" fill="none" stroke="#4b85c8" stroke-width="3" stroke-dasharray="5 4"/>',
+    brain:'<path d="M48 29c0-11 9-19 20-19s20 8 20 19c0 9-5 14-12 18H59c-7-4-11-10-11-18Z" fill="#ef8b88"/><path d="M59 18c-6 5-6 15 0 20M69 13c-4 7-3 19 2 30M79 17c5 6 4 15-1 22" fill="none" stroke="#fff" stroke-width="2"/>',
+    heart:'<path d="M68 48c-15-14-28 7-17 18l17 17 17-17c11-11-2-32-17-18Z" fill="#d95c63"/><path d="M66 48c-2-9 1-16 8-21M74 49c7-5 10-10 10-17" fill="none" stroke="#a23b48" stroke-width="4"/>',
+    breast:'<path d="M48 49c9-7 17-4 20 6 3-10 11-13 20-6v23H48Z" fill="#ef9aa0"/><circle cx="58" cy="59" r="3" fill="#b95261"/><circle cx="78" cy="59" r="3" fill="#b95261"/>',
+    abdomen:'<ellipse cx="68" cy="69" rx="23" ry="20" fill="#e7a35a"/><path d="M53 67c9-8 21-8 31 0M56 76c8-5 17-5 25 0" fill="none" stroke="#fff" stroke-width="3"/>',
+    pelvis:'<path d="M45 76c8-9 38-9 46 0l-8 20H53Z" fill="#8e7ac4"/><path d="M58 76l10 15 10-15" fill="none" stroke="#fff" stroke-width="3"/>',
+    cervical:'<path d="M67 34v31" stroke="#df765f" stroke-width="8" stroke-linecap="round"/><circle cx="67" cy="38" r="3" fill="#fff"/><circle cx="67" cy="47" r="3" fill="#fff"/><circle cx="67" cy="56" r="3" fill="#fff"/>',
+    lumbar:'<path d="M67 67v32" stroke="#df765f" stroke-width="9" stroke-linecap="round"/><circle cx="67" cy="72" r="3" fill="#fff"/><circle cx="67" cy="82" r="3" fill="#fff"/><circle cx="67" cy="92" r="3" fill="#fff"/>',
+    spine:'<path d="M67 34v67" stroke="#df765f" stroke-width="8" stroke-linecap="round"/><path d="M67 38c-7 9 7 13 0 22s7 13 0 22 7 12 0 18" fill="none" stroke="#fff" stroke-width="2"/>'
+  };
+  return `<svg viewBox="0 0 136 116" role="img" aria-label="${title}部位示意图"><title>${title}部位示意图</title><circle cx="68" cy="23" r="15" fill="#bad0e5"/><path d="M48 42c7-5 33-5 40 0l11 49c2 9-5 15-14 15H51c-9 0-16-6-14-15Z" fill="#dbe7f1"/><path d="M48 48 30 83M88 48l18 35" stroke="#bad0e5" stroke-width="10" stroke-linecap="round"/>${marks[organ]}</svg>`;
+}
+
+function renderGrid(){
+  $('examGrid').innerHTML=EXAMS.map(exam=>`<button class="exam-card" data-exam="${exam.id}"><span class="exam-art">${bodyIllustration(exam.organ,exam.title)}</span><span class="exam-name">${exam.title}</span><span class="exam-time">${exam.hint?`${exam.hint}<br>`:''}${exam.actualTime}</span></button>`).join('');
+  document.querySelectorAll('[data-exam]').forEach(btn=>btn.addEventListener('click',()=>{selected=EXAMS.find(e=>e.id===btn.dataset.exam);renderSimulation();showView('sim');}));
+}
+
+function stopVideo(){$('videoWrap').replaceChildren()}
+function showView(name){
+  stopExperience();
+  if(name!=='detail') stopVideo();
+  $('brandTitle').textContent=name==='sim'?`${selected.title} 磁共振模拟体验`:'MRI 磁共振模拟体验';
+  for(const view of document.querySelectorAll('.view')) view.hidden=view.id!==`${name}View`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderDetail(){
+  const video=selected.video||DEFAULT_VIDEO;
+  const generalSteps=['完成安全确认','取下金属物品','按工作人员指引进入扫描舱','扫描期间保持不动','需要时按提示配合呼吸或短暂屏气'];
+  $('videoWrap').innerHTML=`<iframe src="${video.embed}" title="MRI 检查环境视频" allowfullscreen loading="lazy" referrerpolicy="no-referrer"></iframe>`;
+  $('videoLink').href=video.url;
+  $('videoFallback').querySelector('span').textContent=`${video.source}。视频介绍通用 MRI 检查环境，具体安排请以医院通知为准。`;
+  $('stepList').innerHTML=generalSteps.map((step,i)=>`<li><span class="step-no">${i+1}</span><span>${step}</span></li>`).join('');
+  $('detailStart').textContent='返回当前模拟体验';
+}
+function renderSimulation(){
+  $('actualChip').textContent=`实际 ${selected.actualTime}`;
+  updateSoundSelectionUI();
+  $('inlineSoundOptions').hidden=true;
+  $('reselectSound').setAttribute('aria-expanded','false');
+  resetState();renderSim();
+}
+
+class SoundEngine{
+  constructor(){this.ctx=null;this.nodes=[];this.timers=[];this.mode='normal';this.gain=null;this.filter=null;this.previewNodes=[];this.previewTimer=null}
+  output(){if(!this.ctx)this.ctx=new(window.AudioContext||window.webkitAudioContext)();if(this.ctx.state==='suspended')this.ctx.resume();if(!this.gain){this.filter=this.ctx.createBiquadFilter();this.filter.type='lowpass';this.gain=this.ctx.createGain();this.filter.connect(this.gain);this.gain.connect(this.ctx.destination);this.applyMode()}return this.filter}
+  pulse(freq,duration,volume,delay=0,type='triangle'){const ctx=this.ctx||new(window.AudioContext||window.webkitAudioContext)();this.ctx=ctx;const t=ctx.currentTime+delay,o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(volume,t+.01);g.gain.linearRampToValueAtTime(0,t+duration);o.connect(g);g.connect(this.output());o.start(t);o.stop(t+duration+.05);this.nodes.push(o,g)}
+  _continuous(profile,duration){const output=this.output(),ctx=this.ctx,t=ctx.currentTime,o=ctx.createOscillator(),g=ctx.createGain(),fadeOut=Math.max(t+.1,t+duration-.12);o.type='sine';o.frequency.value=profile.baseFreq;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(profile.baseVolume,t+.1);g.gain.setValueAtTime(profile.baseVolume,fadeOut);g.gain.linearRampToValueAtTime(0,t+duration);o.connect(g);g.connect(output);o.start(t);o.stop(t+duration+.05);this.nodes.push(o,g)}
+  _schedulePulse(profile,index){const frequencies=profile.frequencies;const freq=frequencies?frequencies[index%frequencies.length]:profile.minFreq+Math.random()*(profile.maxFreq-profile.minFreq);this.pulse(freq,profile.pulseDuration,profile.pulseVolume,0,profile.type)}
+  _startPulseScheduler(profile,duration){const startedAt=performance.now();let index=0;this._schedulePulse(profile,index++);const timer=setInterval(()=>{if((performance.now()-startedAt)/1000>=duration){clearInterval(timer);this.timers=this.timers.filter(item=>item!==timer);return}this._schedulePulse(profile,index++)},Math.max(60,profile.gap*1000));this.timers.push(timer)}
+  play(id,duration){this.stopAll();if(id==='quiet'||id==='done')return;const profiles={hum:{baseFreq:72,baseVolume:.04,gap:.7,minFreq:160,maxFreq:200,pulseDuration:.12,pulseVolume:.08,type:'sine'},knock:{baseFreq:68,baseVolume:.035,gap:.55,minFreq:380,maxFreq:520,pulseDuration:.14,pulseVolume:.11,type:'triangle'},alternate:{baseFreq:76,baseVolume:.04,gap:.8,frequencies:[260,520],pulseDuration:.14,pulseVolume:.11,type:'triangle'},loud:{baseFreq:82,baseVolume:.055,gap:.38,minFreq:330,maxFreq:630,pulseDuration:.14,pulseVolume:.16,type:'sawtooth'},rapid:{baseFreq:92,baseVolume:.045,gap:.18,minFreq:760,maxFreq:1040,pulseDuration:.1,pulseVolume:.1,type:'triangle'}},profile=profiles[id];if(!profile)return;try{this._continuous(profile,duration);this._startPulseScheduler(profile,duration)}catch{this.stopAll()}}
+  preview(mode){this.stopPreview();const profiles={normal:{volume:.16,cutoff:12000},cotton:{volume:.09,cutoff:2200},earplugs:{volume:.045,cutoff:1000}},profile=profiles[mode];if(!profile)return;try{if(!this.ctx)this.ctx=new(window.AudioContext||window.webkitAudioContext)();if(this.ctx.state==='suspended')this.ctx.resume();const ctx=this.ctx,now=ctx.currentTime,duration=1.5,filter=ctx.createBiquadFilter(),master=ctx.createGain(),hum=ctx.createOscillator(),pulse=ctx.createOscillator(),pulseGain=ctx.createGain();filter.type='lowpass';filter.frequency.value=profile.cutoff;master.gain.setValueAtTime(0,now);master.gain.linearRampToValueAtTime(profile.volume,now+.06);master.gain.setValueAtTime(profile.volume,now+duration-.12);master.gain.linearRampToValueAtTime(0,now+duration);hum.type='sine';hum.frequency.value=78;pulse.type='sawtooth';pulse.frequency.value=480;pulseGain.gain.setValueAtTime(0,now);for(let offset=0;offset<duration;offset+=.3){pulseGain.gain.setValueAtTime(0,now+offset);pulseGain.gain.linearRampToValueAtTime(.55,now+offset+.02);pulseGain.gain.linearRampToValueAtTime(0,Math.min(now+offset+.13,now+duration))}hum.connect(filter);pulse.connect(pulseGain);pulseGain.connect(filter);filter.connect(master);master.connect(ctx.destination);hum.start(now);pulse.start(now);hum.stop(now+duration+.05);pulse.stop(now+duration+.05);this.previewNodes.push(hum,pulse,pulseGain,filter,master);this.previewTimer=setTimeout(()=>this.stopPreview(),(duration+.1)*1000)}catch{this.stopPreview()}}
+  applyMode(){if(!this.gain)return;const modes={normal:[.72,16000],cotton:[.42,2600],earplugs:[.23,1400]},m=modes[this.mode];this.filter.frequency.setTargetAtTime(m[1],this.ctx.currentTime,.06);this.gain.gain.setTargetAtTime(m[0],this.ctx.currentTime,.06)}
+  setMode(mode){this.mode=mode;this.applyMode()}
+  stopPreview(){clearTimeout(this.previewTimer);this.previewTimer=null;this.previewNodes.forEach(n=>{try{if(typeof n.stop==='function')n.stop()}catch{}try{n.disconnect()}catch{}});this.previewNodes=[]}
+  stopAll(){this.stopPreview();this.timers.forEach(clearInterval);this.timers=[];this.nodes.forEach(n=>{try{if(typeof n.stop==='function')n.stop()}catch{}try{n.disconnect()}catch{}});this.nodes=[]}
+}
+const soundEngine=new SoundEngine();
+const SOUND_MODES={normal:'原声（较响）',cotton:'棉花（稍小）',earplugs:'耳塞（更小）'};
+
+function updateSoundSelectionUI(){
+  document.querySelectorAll('[data-sound-choice]').forEach(button=>{
+    const active=button.dataset.soundChoice===soundEngine.mode;
+    button.classList.toggle('active',active);
+    button.setAttribute('aria-pressed',String(active));
+  });
+  $('currentSoundMode').textContent=SOUND_MODES[soundEngine.mode];
+}
+function selectSoundMode(mode){
+  if(!SOUND_MODES[mode])return;
+  const sequence=selected.sequences[state.index];
+  const machineSoundPlaying=state.running&&!state.announcing&&sequence&&sequence.id!=='quiet'&&sequence.id!=='done';
+  soundEngine.setMode(mode);
+  if(!machineSoundPlaying)soundEngine.preview(mode);
+  updateSoundSelectionUI();
+  $('inlineSoundOptions').hidden=true;
+  $('reselectSound').setAttribute('aria-expanded','false');
+}
+
+function showSpeechCaption(text){$('speechCaption').textContent=text;$('speechCaption').hidden=false}
+function hideSpeechCaption(){$('speechCaption').hidden=true;$('speechCaption').textContent=''}
+function captionDisplayTime(text){return Math.min(6500,Math.max(3000,text.length*90))}
+function speak(text,callback){
+  const speechToken=state.token;
+  let settled=false;
+  const finish=()=>{
+    if(settled||speechToken!==state.token)return;
+    settled=true;clearTimeout(state.timerFallback);activeUtterance=null;pendingSpeechFinish=null;callback();
+  };
+  const continueWithoutSpeech=()=>{
+    if(speechToken!==state.token)return;
+    showSpeechCaption(text);
+    state.timerFallback=setTimeout(finish,captionDisplayTime(text));
+  };
+  pendingSpeechFinish=finish;
+  if(!voiceEnabled){continueWithoutSpeech();return}
+  if(!window.speechSynthesis||typeof SpeechSynthesisUtterance!=='function'){continueWithoutSpeech();return}
+  clearTimeout(state.timerFallback);
+  showSpeechCaption(text);
+  try{
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    activeUtterance=u;u.lang='zh-CN';u.rate=.9;u.pitch=1.05;u.volume=1;
+    const voices=window.speechSynthesis.getVoices();
+    const chineseVoice=voices.find(voice=>voice.lang&&voice.lang.toLowerCase().startsWith('zh')&&voice.name.includes('Female'));
+    if(chineseVoice)u.voice=chineseVoice;
+    u.onend=()=>finish();
+    u.onerror=()=>{if(settled)return;activeUtterance=null;continueWithoutSpeech()};
+    window.speechSynthesis.speak(u);
+  }catch{activeUtterance=null;continueWithoutSpeech()}
+}
+function speechTimeForSpeech(actualTime){
+  const ranges={'约 20–40 分钟':'约二十到四十分钟','约 20–60 分钟':'约二十到六十分钟','约 30–60 分钟':'约三十到六十分钟','约 45–90 分钟':'约四十五到九十分钟'};
+  return ranges[actualTime]||actualTime;
+}
+function actualSequenceDurationForSpeech(actualTime,index){
+  const ranges={
+    '约 20–40 分钟':['一到两分钟','两到四分钟','四到七分钟','四到七分钟','四到七分钟','四到十二分钟','不到一分钟'],
+    '约 20–60 分钟':['一到两分钟','两到五分钟','四到十分钟','四到十分钟','四到十分钟','五到二十二分钟','不到一分钟'],
+    '约 30–60 分钟':['一到两分钟','两到五分钟','六到十分钟','六到十分钟','六到十分钟','八到二十二分钟','不到一分钟'],
+    '约 45–90 分钟':['一到两分钟','三到六分钟','八到十五分钟','八到十五分钟','八到十五分钟','十七到三十七分钟','不到一分钟']
+  };
+  const durations=ranges[actualTime]||ranges['约 20–40 分钟'];
+  return durations[index];
+}
+function actualSequenceDurationLabels(actualTime){
+  const ranges={
+    '约 20–40 分钟':['约1–2分','约2–4分','约4–7分','约4–7分','约4–7分','约4–12分','少于1分'],
+    '约 20–60 分钟':['约1–2分','约2–5分','约4–10分','约4–10分','约4–10分','约5–22分','少于1分'],
+    '约 30–60 分钟':['约1–2分','约2–5分','约6–10分','约6–10分','约6–10分','约8–22分','少于1分'],
+    '约 45–90 分钟':['约1–2分','约3–6分','约8–15分','约8–15分','约8–15分','约17–37分','少于1分']
+  };
+  return ranges[actualTime]||ranges['约 20–40 分钟'];
+}
+function getTotalDuration(){return selected.sequences.reduce((sum,item)=>sum+item.duration,0)}
+function startExperience(){
+  if(state.running)return;resetState();state.running=true;state.announcing=true;state.token++;renderSim();
+  state.timer=setInterval(tick,1000);
+  const promptDescription=voiceEnabled?'语音和文字说明':'文字说明';
+  const text=`接下来进行约一分半的模拟体验，共分${selected.sequences.length}个阶段，每个阶段开始前会有${promptDescription}。请注意，真实${selected.title}检查${speechTimeForSpeech(selected.actualTime)}，期间一般没有语音和文字说明。`;
+  speak(text,()=>announceStage(0));
+}
+function announceStage(index){
+  if(!state.running)return;state.announcing=true;state.index=index;renderSim();const seq=selected.sequences[index];
+  const actualDuration=actualSequenceDurationForSpeech(selected.actualTime,index);
+  speak(`阶段${index+1}：${seq.name}。${seq.announce}真实检查中，这一步大约${actualDuration}。`,()=>{if(!state.running)return;state.announcing=false;soundEngine.play(seq.id,seq.duration);renderSim()});
+}
+function tick(){
+  if(!state.running||state.announcing)return;state.elapsed++;state.stageElapsed++;const seq=selected.sequences[state.index];
+  if(state.stageElapsed>=seq.duration){soundEngine.stopAll();state.stageElapsed=0;if(state.index===selected.sequences.length-1){state.running=false;state.finished=true;clearInterval(state.timer);state.timer=null;renderSim();return}announceStage(state.index+1)}
+  renderSim();
+}
+function resetState(){clearInterval(state.timer);clearTimeout(state.timerFallback);state={running:false,finished:false,index:0,elapsed:0,stageElapsed:0,timer:null,timerFallback:null,announcing:false,token:state.token+1};soundEngine.stopAll();if(window.speechSynthesis)window.speechSynthesis.cancel();activeUtterance=null;pendingSpeechFinish=null;hideSpeechCaption()}
+function stopExperience(){resetState();}
+function renderProcessComparison(stageDurations){
+  const actualSteps=selected.steps.map((text,index)=>({text,index,stages:[]}));
+  const stageGroups={enter:[0,1],scan:[2,3,4,5],finish:[6]};
+  Object.entries(stageGroups).forEach(([key,stages])=>{
+    const mappedIndexes=selected.processMap[key]||[];
+    if(!mappedIndexes.length)return;
+    const actualIndex=mappedIndexes[0];
+    if(actualSteps[actualIndex])actualSteps[actualIndex].stages=stages;
+  });
+  return actualSteps.map((step,displayIndex)=>{
+    const stages=step.stages;
+    const experience=stages.length?`<div class="mapping-stages vertical">${stages.map(i=>{
+      const stageClass=i<state.index||state.finished?'done':i===state.index?'active':'';
+      return `<span class="mapping-stage ${stageClass}"><span class="stage-marker">${stageClass==='done'?'✓':''}</span><span>${selected.sequences[i].name}</span><small>${stageDurations[i]}</small></span>`;
+    }).join('')}</div>`:'';
+    return `<div class="actual-process-item ${stages.length?'simulated':'not-simulated'}"><div class="actual-step-main"><span class="actual-step-number">${displayIndex+1}</span><span>${step.text}</span></div>${experience}</div>`;
+  }).join('');
+}
+function renderSim(){
+  const seq=selected.sequences[state.index];
+  const stageDurations=actualSequenceDurationLabels(selected.actualTime);
+  const completedCount=state.finished?selected.sequences.length:state.index;
+  updateSoundSelectionUI();
+  $('progressSegments').innerHTML=selected.sequences.map((item,i)=>{
+    const hasMachineSound=item.id!=='quiet'&&item.id!=='done';
+    const soundStage=hasMachineSound?' sound-stage':' silent-stage';
+    const label=`aria-label="阶段${i+1}，${hasMachineSound?'有机器声音':'无机器声音'}"`;
+    if(i<completedCount)return `<span class="progress-segment done${soundStage}" ${label}></span>`;
+    if(state.running&&i===state.index)return `<span class="progress-segment current${soundStage}" ${label}></span>`;
+    return `<span class="progress-segment${soundStage}" ${label}></span>`;
+  }).join('');
+  $('progressSegments').setAttribute('aria-valuemax',selected.sequences.length);
+  $('progressSegments').setAttribute('aria-valuenow',completedCount);
+  const ariaStage=state.finished?`阶段${selected.sequences.length}`:`阶段${state.index+1}`;
+  $('progressSegments').setAttribute('aria-valuetext',`${ariaStage}，已完成${completedCount}个`);
+  $('progressCount').textContent=`进度 ${completedCount}/${selected.sequences.length}`;
+  $('resetRunning').hidden=!state.running;
+  if(state.finished){$('statusSummary').hidden=true;$('statusPhase').hidden=true;$('phaseState').hidden=true;$('statusReset').hidden=false;$('startBtn').hidden=true;showSpeechCaption('体验完成，可以放松身体了')}
+  else if(state.running){$('statusSummary').hidden=false;$('statusPhase').hidden=false;$('statusPhase').textContent=seq.name;$('phaseState').hidden=state.announcing;$('phaseState').textContent='进行中';$('statusReset').hidden=true;$('startBtn').hidden=true}
+  else{$('statusSummary').hidden=true;$('statusPhase').hidden=true;$('phaseState').hidden=true;$('statusReset').hidden=true;$('startBtn').hidden=false}
+  $('processTotalTime').textContent=`耗时总计 ${selected.actualTime}`;
+  $('processComparisonList').innerHTML=renderProcessComparison(stageDurations);
+}
+
+renderGrid();
+$('detailBack').addEventListener('click',()=>{renderSimulation();showView('sim')});
+$('detailChoose').addEventListener('click',()=>showView('select'));
+$('detailStart').addEventListener('click',()=>{renderSimulation();showView('sim')});
+$('simBack').addEventListener('click',()=>showView('select'));
+$('startBtn').addEventListener('click',startExperience);
+$('statusReset').addEventListener('click',startExperience);
+$('resetRunning').addEventListener('click',()=>{resetState();renderSim()});
+$('watchVideo').addEventListener('click',()=>{renderDetail();showView('detail')});
+document.querySelectorAll('[data-sound-choice]').forEach(button=>button.addEventListener('click',()=>selectSoundMode(button.dataset.soundChoice)));
+$('reselectSound').addEventListener('click',()=>{const options=$('inlineSoundOptions');options.hidden=!options.hidden;$('reselectSound').setAttribute('aria-expanded',String(!options.hidden))});
+$('voiceToggle').addEventListener('change',function(){
+  voiceEnabled=this.checked;
+  if(!voiceEnabled&&state.announcing&&pendingSpeechFinish){const finish=pendingSpeechFinish;if(window.speechSynthesis)window.speechSynthesis.cancel();finish()}
+});
+window.addEventListener('pagehide',()=>{stopExperience();stopVideo()});
+</script>
+</body>
+</html>
