@@ -33,7 +33,32 @@ button,a{font:inherit}.app{width:100%;max-width:760px;margin:0 auto;background:#
 .app{border-color:#dcebe8;box-shadow:0 10px 30px rgba(32,100,95,.08)}.exam-art,.detail-art{background:#f0f9fa}.exam-card:hover,.exam-card:focus-visible{border-color:#63b9c9;box-shadow:0 4px 14px rgba(8,127,173,.1)}.status{background:#edf9fb;color:#174d66;border:1px solid #b9dfe5}.speech-caption{background:#fff;color:#214f63;border:1px solid #d8ebed}.start-btn,.status-reset{border-color:#a9d3dc;color:#086b91}.phase-state{color:#4d7f8d}.phase-state::before{background:#22a7a0}.progress-segment.sound-stage{background:#76c8d1}.progress-segment.current.sound-stage{background:#0786a8}.progress-segment.silent-stage{background:#fff;border-color:#78909c}.progress-segment.current.silent-stage{border-color:#0786a8}.progress-segment.done.sound-stage,.progress-segment.done.silent-stage{background:#28a47d;border-color:#28a47d;box-shadow:none}.voice-toggle input:checked+.voice-switch{background:#22a7a0}.sound-edit-btn{border-color:#9ed8d0;background:#f0fbfa;color:#157d75}.sound-edit-btn:hover,.sound-edit-btn:focus-visible{border-color:#4db7aa;background:#e5f8f5;outline-color:rgba(34,167,160,.16)}.sound-choice.active{border-color:#22a7a0;background:#effbf8;box-shadow:0 0 0 1px #22a7a0}.sound-choice.active strong{color:#157d75}.mapping-stage.active{border-color:#63b9c9;background:#eef9fb;color:#087fad}.mapping-stage.done{border-color:#7bcdb9;background:#ecf9f5;color:#219b7a}.stage-reset{border-color:#9ed8d0;color:#157d75}
 @keyframes stagePulse{0%,100%{opacity:.58;box-shadow:0 0 0 0 rgba(47,122,198,0)}50%{opacity:1;box-shadow:0 0 0 3px rgba(47,122,198,.14)}}
 @keyframes statusPulse{0%,100%{opacity:.35}50%{opacity:1}}
-@media(max-width:560px){body{padding:0;background:#fff}.app{border:0;box-shadow:none;padding:18px 14px;max-width:none}.page-title{font-size:22px}.exam-card{min-height:158px;padding:9px}.exam-art{height:82px}.exam-art svg{height:78px}.exam-name{font-size:15px}.detail-head{grid-template-columns:96px 1fr}.detail-art,.detail-art svg{height:96px}.actions{flex-direction:column}.secondary{width:100%}.video-fallback{align-items:flex-start;flex-direction:column}.sim-head{align-items:center;gap:8px}.hearing-options{max-width:none}.prompt-setting{gap:10px}.prompt-copy span{font-size:11px}.sound-choice-grid{grid-template-columns:1fr}.sound-choice{min-height:72px}.sound-summary{align-items:baseline}.settings-toolbar{gap:12px;flex-wrap:wrap}.settings-toolbar .sound-summary{margin-left:0}.progress-row{align-items:flex-end;gap:8px}.progress-count{min-width:62px;font-size:11px}.speech-caption{margin-right:70px}.progress-segments{gap:3px}.timeline-head{align-items:flex-start}.timeline-meta{flex-direction:column;align-items:flex-end;gap:2px}}
+@media(max-width:560px){body{padding:0;background:#fff}.app{border:0;box-shadow:none;padding:18px 14px;max-width:none}.page-title{font-size:22px}.exam-card{min-height:158px;padding:9px}.exam-art{height:82px}.exam-art svg{height:78px}.exam-name{font-size:15px}.detail-head{grid-template-columns:96px 1fr}.detail-art,.detail-art svg{height:96px}.actions{flex-direction:column}.secondary{width:100%}.video-fallback{align-items:flex-start;flex-direction:column}.sim-head{align-items:center;gap:8px}.hearing-options{max-width:none}.prompt-setting{gap:10px}.prompt-copy span{font-size:11px}.sound-choice-grid{grid-template-columns:1fr}.sound-choice{min-height:72px}.sound-summary{align-items:baseline}.settings-toolbar{gap:12px;flex-wrap:wrap}.settings-toolbar .sound-summary{margin-left:0}.progress-row{align-items:flex-end;gap:8px}.progress-count{min-width:62px;font-size:11px}.speech-caption{margin-right:70px}.progress-segments{gap:3px}.timeline-head{align-items:flex-start}.timeline-meta{flex-direction:column;align-items:flex-end;gap:2px}
+/* ---- 修复手机端文字遮挡 begin ---- */
+.status-heading {
+  padding-right: 20px !important;
+}
+.speech-caption {
+  margin-right: 10px !important;
+  -webkit-line-clamp: 5 !important;
+  min-height: auto !important;
+  word-break: break-word;
+}
+.status-phase {
+  font-size: 18px !important;
+  word-break: break-word;
+}
+.stage-reset {
+  top: auto !important;
+  bottom: 12px !important;
+  right: 12px !important;
+}
+.progress-count {
+  font-size: 10px !important;
+  min-width: 50px !important;
+}
+/* ---- 修复手机端文字遮挡 end ---- */
+}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -265,18 +290,68 @@ function actualSequenceDurationLabels(actualTime){
   return ranges[actualTime]||ranges['约 20–40 分钟'];
 }
 function getTotalDuration(){return selected.sequences.reduce((sum,item)=>sum+item.duration,0)}
+
+// ===== 修复：重写 startExperience 和 announceStage，解决手机语音自动播放问题 =====
 function startExperience(){
   if(state.running)return;resetState();state.running=true;state.announcing=true;state.token++;renderSim();
   state.timer=setInterval(tick,1000);
   const promptDescription=voiceEnabled?'语音和文字说明':'文字说明';
   const text=`接下来进行约一分半的模拟体验，共分${selected.sequences.length}个阶段，每个阶段开始前会有${promptDescription}。请注意，真实${selected.title}检查${speechTimeForSpeech(selected.actualTime)}，期间一般没有语音和文字说明。`;
-  speak(text,()=>announceStage(0));
+  // 直接显示文字，并尝试语音，然后设定定时器推进
+  showSpeechCaption(text);
+  if(voiceEnabled && window.speechSynthesis && typeof SpeechSynthesisUtterance==='function'){
+    try{
+      window.speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text);
+      u.lang='zh-CN';u.rate=.9;u.pitch=1.05;u.volume=1;
+      const voices=window.speechSynthesis.getVoices();
+      const chineseVoice=voices.find(v=>v.lang&&v.lang.toLowerCase().startsWith('zh')&&v.name.includes('Female'));
+      if(chineseVoice)u.voice=chineseVoice;
+      u.onerror=function(){};
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  // 设定定时器（约6秒）后开始第一个阶段
+  clearTimeout(state.timerFallback);
+  state.timerFallback=setTimeout(()=>{
+    if(state.running) announceStage(0);
+  }, 6000);
 }
+
 function announceStage(index){
-  if(!state.running)return;state.announcing=true;state.index=index;renderSim();const seq=selected.sequences[index];
-  const actualDuration=actualSequenceDurationForSpeech(selected.actualTime,index);
-  speak(`阶段${index+1}：${seq.name}。${seq.announce}真实检查中，这一步大约${actualDuration}。`,()=>{if(!state.running)return;state.announcing=false;soundEngine.play(seq.id,seq.duration);renderSim()});
+  if(!state.running) return;
+  state.announcing = true;
+  state.index = index;
+  renderSim();
+  const seq = selected.sequences[index];
+  const actualDuration = actualSequenceDurationForSpeech(selected.actualTime, index);
+  const text = `阶段${index + 1}：${seq.name}。${seq.announce}真实检查中，这一步大约${actualDuration}。`;
+  showSpeechCaption(text);
+  // 尝试语音播报
+  if(voiceEnabled && window.speechSynthesis && typeof SpeechSynthesisUtterance==='function'){
+    try{
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang='zh-CN';u.rate=.9;u.pitch=1.05;u.volume=1;
+      const voices=window.speechSynthesis.getVoices();
+      const chineseVoice=voices.find(v=>v.lang&&v.lang.toLowerCase().startsWith('zh')&&v.name.includes('Female'));
+      if(chineseVoice)u.voice=chineseVoice;
+      u.onerror=function(){};
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  // 设定定时器（约5-7秒）后推进到声音播放
+  const delay = Math.min(7000, Math.max(4000, text.length * 70));
+  clearTimeout(state.timerFallback);
+  state.timerFallback = setTimeout(() => {
+    if(!state.running) return;
+    state.announcing = false;
+    soundEngine.play(seq.id, seq.duration);
+    renderSim();
+  }, delay);
 }
+// ===== 修复结束 =====
+
 function tick(){
   if(!state.running||state.announcing)return;state.elapsed++;state.stageElapsed++;const seq=selected.sequences[state.index];
   if(state.stageElapsed>=seq.duration){soundEngine.stopAll();state.stageElapsed=0;if(state.index===selected.sequences.length-1){state.running=false;state.finished=true;clearInterval(state.timer);state.timer=null;renderSim();return}announceStage(state.index+1)}
