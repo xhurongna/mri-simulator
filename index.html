@@ -22,7 +22,6 @@
         padding: 0;
         -webkit-tap-highlight-color: transparent;
       }
-      /* ===== 强制居中：双重保险 ===== */
       body {
         min-height: 100vh;
         background: var(--bg);
@@ -47,14 +46,12 @@
         padding: 22px;
         flex-shrink: 0;
       }
-      /* ===== 确保卡片网格撑满 ===== */
       .exam-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
         width: 100%;
       }
-      /* ===== 其余样式保持不变 ===== */
       .brand {
         font-size: 24px;
       }
@@ -1094,7 +1091,6 @@
       .sound-summary {
         display: flex;
         align-items: center;
-        justify-content: space-between;
         gap: 12px;
         margin: 0 0 14px;
         padding: 10px 12px;
@@ -1104,7 +1100,7 @@
       }
       .sound-summary-copy {
         display: flex;
-        align-items: baseline;
+        align-items: center;
         gap: 8px;
         min-width: 0;
       }
@@ -1116,6 +1112,48 @@
         color: #174f8e;
         font-size: 14px;
       }
+      .sound-summary .voice-toggle {
+        flex: none;
+      }
+      .sound-summary .voice-toggle .voice-switch {
+        width: 36px;
+        height: 22px;
+        border-radius: 11px;
+      }
+      .sound-summary .voice-toggle .voice-switch::after {
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+      }
+      .sound-summary .voice-toggle input:checked + .voice-switch::after {
+        transform: translateX(14px);
+      }
+      .sound-summary .voice-toggle input:disabled + .voice-switch {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .sound-summary .voice-toggle input:disabled {
+        cursor: not-allowed;
+      }
+      .sound-edit-btn {
+        display: none;
+      }
+      .inline-sound-options {
+        display: none;
+      }
+      .sound-summary .scan-sound-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .sound-summary .scan-sound-status {
+        font-size: 12px;
+        color: var(--muted);
+        margin-left: 4px;
+      }
+
+      /* 其他原样式保留 */
       .sound-edit-btn {
         min-height: 36px;
         padding: 6px 10px;
@@ -1300,216 +1338,6 @@
         font-size: 11px;
         font-weight: 500;
         line-height: 1.45;
-      }
-      .sound-summary {
-        justify-content: flex-start;
-        gap: 4px;
-        margin: 0 0 8px;
-        padding: 0;
-        border: 0;
-        border-radius: 0;
-        background: transparent;
-      }
-      .sound-summary-copy {
-        gap: 4px;
-      }
-      .sound-summary-copy span,
-      .sound-summary-copy strong {
-        font-size: 12px;
-        font-weight: 500;
-      }
-      .sound-edit-btn {
-        min-height: auto;
-        padding: 2px 0;
-        border: 0;
-        border-radius: 0;
-        background: transparent;
-        color: var(--blue);
-        font-size: 12px;
-      }
-      .sound-edit-btn::before {
-        content: "· ";
-        color: var(--muted);
-      }
-      .sound-edit-btn:hover,
-      .sound-edit-btn:focus-visible {
-        text-decoration: underline;
-        outline: none;
-      }
-      .inline-sound-options {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 8px;
-        max-width: 430px;
-        margin: 0 0 12px;
-      }
-      .inline-sound-options[hidden] {
-        display: none;
-      }
-      .inline-sound-options .sound-choice {
-        min-height: 48px;
-        padding: 7px 10px;
-      }
-      .inline-sound-options .sound-choice strong {
-        font-size: 13px;
-      }
-      .inline-sound-options .sound-choice small {
-        margin-top: 1px;
-        font-size: 11px;
-      }
-      .progress-legend {
-        display: flex;
-        justify-content: flex-start;
-        gap: 18px;
-        margin: 10px 0 5px;
-        color: #314b68;
-        font-size: 13px;
-        font-weight: 650;
-      }
-      .progress-legend span {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-      }
-      .progress-legend span::before {
-        content: "";
-        width: 20px;
-        height: 10px;
-        border-radius: 2px;
-        background: #4b85c8;
-      }
-      .progress-legend .silent::before {
-        background: #fff;
-        border: 2px solid #6f8093;
-      }
-      .progress-segment {
-        height: 16px;
-      }
-      .progress-segment.sound-stage {
-        background: #70a8df;
-      }
-      .progress-segment.silent-stage {
-        background: #fff;
-        border: 2px solid #6f8093;
-      }
-      .progress-segment.current.sound-stage {
-        background: #225da4;
-      }
-      .progress-segment.current.silent-stage {
-        background: #fff;
-        border-color: #225da4;
-      }
-      .progress-segment.done.silent-stage {
-        background: #fff;
-        border-color: #43a88d;
-        box-shadow: inset 0 -4px #43a88d;
-      }
-      .status-reset {
-        width: auto;
-        min-height: 40px;
-        margin-left: auto;
-        padding: 8px 14px;
-        font-size: 14px;
-      }
-      .status-action {
-        display: flex;
-      }
-      .prompt-setting {
-        display: block;
-        padding: 10px 0 0;
-      }
-      .voice-control {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 5px 7px 5px 12px;
-        border: 1px solid #b9cde3;
-        border-radius: 999px;
-        background: #edf5ff;
-        color: #174f8e;
-      }
-      .voice-label {
-        font-size: 13px;
-        font-weight: 700;
-      }
-      .prompt-copy span {
-        margin-top: 6px;
-      }
-      .progress-row {
-        flex-direction: row;
-        align-items: flex-end;
-        gap: 12px;
-        margin-top: 8px;
-      }
-      .progress-count {
-        order: 1;
-        min-width: 68px;
-        padding-bottom: 1px;
-        text-align: right;
-        font-size: 12px;
-        font-weight: 650;
-        white-space: nowrap;
-      }
-      .progress-track-wrap {
-        order: 0;
-        width: auto;
-        min-width: 0;
-        flex: 1;
-        padding-top: 18px;
-      }
-      .progress-segment {
-        position: relative;
-      }
-      .progress-segment.sound-stage::before {
-        content: "🔊";
-        position: absolute;
-        left: 50%;
-        bottom: calc(100% + 3px);
-        transform: translateX(-50%);
-        font-size: 10px;
-        line-height: 1;
-      }
-      .speech-caption {
-        margin-right: 80px;
-      }
-      .timeline {
-        margin-top: 32px;
-        padding-top: 20px;
-        border-top: 1px solid var(--line);
-      }
-      .sound-edit-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        min-height: 34px;
-        padding: 6px 10px;
-        border: 1px solid #9fc1e4;
-        border-radius: 6px;
-        background: #edf5ff;
-        color: #225da4;
-        font-size: 12px;
-        font-weight: 700;
-        line-height: 1;
-        cursor: pointer;
-      }
-      .sound-edit-btn::before {
-        content: none;
-      }
-      .sound-edit-btn::after {
-        content: "▾";
-        font-size: 12px;
-        transition: transform 0.15s;
-      }
-      .sound-edit-btn[aria-expanded="true"]::after {
-        transform: rotate(180deg);
-      }
-      .sound-edit-btn:hover,
-      .sound-edit-btn:focus-visible {
-        border-color: #4b85c8;
-        background: #e2f0ff;
-        text-decoration: none;
-        outline: 3px solid rgba(47, 122, 198, 0.16);
-        outline-offset: 1px;
       }
       .experience-settings {
         margin: 0 0 12px;
@@ -1777,7 +1605,6 @@
           align-items: flex-end;
           gap: 2px;
         }
-        /* ===== 重置按钮放在右上角 ===== */
         .status {
           position: relative !important;
         }
@@ -1796,7 +1623,7 @@
           animation: none !important;
         }
       }
-      /* ===== 页脚样式（已优化） ===== */
+      /* 页脚样式 */
       .app footer {
         margin-top: 24px;
         padding-top: 16px;
@@ -1892,60 +1719,30 @@
                   class="voice-control voice-toggle"
                   for="voiceToggle"
                   aria-label="开启或关闭阶段说明语音"
-                  ><strong class="voice-label">语音播报</strong
-                  ><input id="voiceToggle" type="checkbox" checked /><i
-                    class="voice-switch"
-                    aria-hidden="true"
-                  ></i
-                ></label>
+                >
+                  <strong class="voice-label">语音播报</strong>
+                  <input id="voiceToggle" type="checkbox" checked />
+                  <i class="voice-switch" aria-hidden="true"></i>
+                </label>
               </div>
             </div>
+            <!-- 扫描音效开关 -->
             <div class="sound-summary">
               <div class="sound-summary-copy">
-                <span>音效：</span
-                ><strong id="currentSoundMode">原声（较响）</strong>
+                <span class="scan-sound-label">扫描音效</span>
+                <label class="voice-toggle" aria-label="开启或关闭扫描机器声音">
+                  <input id="scanSoundToggle" type="checkbox" checked />
+                  <i class="voice-switch" aria-hidden="true"></i>
+                </label>
+                <span class="scan-sound-status" id="scanSoundStatus"
+                  >已开启</span
+                >
               </div>
-              <button
-                class="sound-edit-btn"
-                id="reselectSound"
-                aria-expanded="false"
-                aria-controls="inlineSoundOptions"
-              >
-                更换音效
-              </button>
             </div>
           </div>
           <p class="prompt-note">
             仅用于模拟体验；真实检查进入扫描舱后通常没有逐阶段语音提示。
           </p>
-          <div
-            class="inline-sound-options"
-            id="inlineSoundOptions"
-            hidden
-            aria-label="选择模拟音效"
-          >
-            <button
-              class="sound-choice active"
-              data-sound-choice="normal"
-              aria-pressed="true"
-            >
-              <strong>原声</strong><small>较响</small>
-            </button>
-            <button
-              class="sound-choice"
-              data-sound-choice="cotton"
-              aria-pressed="false"
-            >
-              <strong>棉花</strong><small>稍小</small>
-            </button>
-            <button
-              class="sound-choice"
-              data-sound-choice="earplugs"
-              aria-pressed="false"
-            >
-              <strong>耳塞</strong><small>更小</small>
-            </button>
-          </div>
         </div>
         <div class="status">
           <button class="stage-reset" id="resetRunning" hidden>重置</button>
@@ -1997,7 +1794,7 @@
         </div>
       </section>
 
-      <!-- ==================== 页脚 ==================== -->
+      <!-- 页脚 -->
       <footer>
         <p style="font-weight: 600; color: #667788; margin-bottom: 4px">
           📢 音频来源
@@ -2080,15 +1877,44 @@
         rapid: "audio/seq_dwi.mp3",
       };
 
-      const PHASE_VOICE = {
+      // 固定通用语音（非特殊阶段）
+      const FIXED_VOICE = {
         0: "audio/phase_enter.mp3",
         1: "audio/phase_confirm.mp3",
         2: "audio/phase_knock.mp3",
-        3: "audio/phase_stay_still.mp3",
         4: "audio/phase_loud.mp3",
-        5: "audio/phase_final_breath.mp3",
         6: "audio/phase_done.mp3",
       };
+
+      // 根据部位获取阶段语音
+      function getPhaseVoice(index) {
+        const organ = selected.organ;
+        // 阶段4（索引3）特殊指令
+        if (index === 3) {
+          const map = {
+            brain: "audio/phase4_brain.mp3",
+            cardiac: "audio/phase4_cardiac.mp3",
+            breast: "audio/phase4_breast.mp3",
+            abdomen: "audio/phase4_abdomen.mp3",
+            pelvis: "audio/phase4_pelvis.mp3",
+            cervical: "audio/phase4_cervical.mp3",
+            lumbar: "audio/phase4_lumbar.mp3",
+            spine: "audio/phase4_spine.mp3",
+            general: "audio/phase4_general.mp3",
+          };
+          return map[organ] || map.general;
+        }
+        // 阶段6（索引5）特殊指令
+        if (index === 5) {
+          const map = {
+            cardiac: "audio/phase6_cardiac.mp3",
+            spine: "audio/phase6_spine.mp3",
+          };
+          return map[organ] || "audio/phase6_general.mp3";
+        }
+        // 其他阶段固定
+        return FIXED_VOICE[index];
+      }
 
       const INTRO_VOICE = {
         brain: "audio/intro_brain.mp3",
@@ -2365,6 +2191,7 @@
       const $ = (id) => document.getElementById(id);
       let selected = EXAMS[0];
       let voiceEnabled = true;
+      let scanSoundEnabled = true;
 
       let state = {
         running: false,
@@ -2460,35 +2287,8 @@
 
       function renderSimulation() {
         $("actualChip").textContent = `实际 ${selected.actualTime}`;
-        updateSoundSelectionUI();
-        $("inlineSoundOptions").hidden = true;
-        $("reselectSound").setAttribute("aria-expanded", "false");
         resetState();
         renderSim();
-      }
-
-      const SOUND_MODES = {
-        normal: "原声（较响）",
-        cotton: "棉花（稍小）",
-        earplugs: "耳塞（更小）",
-      };
-      let currentMode = "normal";
-
-      function updateSoundSelectionUI() {
-        document.querySelectorAll("[data-sound-choice]").forEach((btn) => {
-          const active = btn.dataset.soundChoice === currentMode;
-          btn.classList.toggle("active", active);
-          btn.setAttribute("aria-pressed", String(active));
-        });
-        $("currentSoundMode").textContent = SOUND_MODES[currentMode];
-      }
-
-      function selectSoundMode(mode) {
-        if (!SOUND_MODES[mode]) return;
-        currentMode = mode;
-        updateSoundSelectionUI();
-        $("inlineSoundOptions").hidden = true;
-        $("reselectSound").setAttribute("aria-expanded", "false");
       }
 
       function playAudio(url, callback, playbackRate = 1.0) {
@@ -2523,6 +2323,10 @@
       }
 
       function playMachineSound(id, callback) {
+        if (!scanSoundEnabled) {
+          if (callback) callback();
+          return;
+        }
         const url = SEQ_AUDIO[id];
         if (!url) {
           if (callback) callback();
@@ -2533,11 +2337,19 @@
       }
 
       function playPhaseVoice(index, callback) {
-        const url = PHASE_VOICE[index];
+        if (!voiceEnabled) {
+          if (callback) callback();
+          return;
+        }
+        const url = getPhaseVoice(index);
         playAudio(url, callback);
       }
 
       function playIntroVoice(callback) {
+        if (!voiceEnabled) {
+          if (callback) callback();
+          return;
+        }
         const url = INTRO_VOICE[selected.organ] || INTRO_VOICE.general;
         playAudio(url, callback);
       }
@@ -2574,7 +2386,8 @@
         renderSim();
 
         const seq = selected.sequences[index];
-        const text = `阶段${index + 1}：${seq.name}。${seq.announce}`;
+        // 字幕只显示具体指令，不拼接阶段名称
+        const text = seq.announce;
         showSpeechCaption(text);
 
         playPhaseVoice(index, () => {
@@ -2721,6 +2534,21 @@
           ? selected.sequences.length
           : state.index;
 
+        // 更新扫描音效开关状态：只有扫描阶段且体验运行时才可用
+        const isScanStage = seq && seq.id !== "quiet" && seq.id !== "done";
+        const scanToggle = document.getElementById("scanSoundToggle");
+        if (scanToggle) {
+          scanToggle.disabled = !isScanStage || !state.running;
+          const statusEl = document.getElementById("scanSoundStatus");
+          if (statusEl) {
+            if (scanToggle.disabled) {
+              statusEl.textContent = "—";
+            } else {
+              statusEl.textContent = scanToggle.checked ? "已开启" : "已关闭";
+            }
+          }
+        }
+
         $("progressSegments").innerHTML = selected.sequences
           .map((item, i) => {
             const hasMachineSound = item.id !== "quiet" && item.id !== "done";
@@ -2802,23 +2630,19 @@
         showView("detail");
       });
 
-      document
-        .querySelectorAll("[data-sound-choice]")
-        .forEach((btn) =>
-          btn.addEventListener("click", () =>
-            selectSoundMode(btn.dataset.soundChoice),
-          ),
-        );
-      $("reselectSound").addEventListener("click", () => {
-        const options = $("inlineSoundOptions");
-        options.hidden = !options.hidden;
-        $("reselectSound").setAttribute(
-          "aria-expanded",
-          String(!options.hidden),
-        );
-      });
       $("voiceToggle").addEventListener("change", function () {
         voiceEnabled = this.checked;
+      });
+
+      $("scanSoundToggle").addEventListener("change", function () {
+        scanSoundEnabled = this.checked;
+        // 如果关闭扫描音效且当前正在播放，则停止
+        if (!scanSoundEnabled && currentAudio) {
+          // 仅停止声音，不影响流程
+          currentAudio.pause();
+          currentAudio = null;
+          // 注意：不触发回调，避免干扰流程，用户会听到声音中断
+        }
       });
 
       window.addEventListener("pagehide", () => {
