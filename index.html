@@ -22,6 +22,7 @@
         padding: 0;
         -webkit-tap-highlight-color: transparent;
       }
+      /* ===== 强制居中：双重保险 ===== */
       body {
         min-height: 100vh;
         background: var(--bg);
@@ -34,7 +35,26 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: flex-start;
       }
+      .app {
+        width: 100%;
+        max-width: 760px;
+        margin: 0 auto;
+        background: #fff;
+        border: 1px solid #e4eaf1;
+        box-shadow: 0 10px 30px rgba(25, 48, 80, 0.08);
+        padding: 22px;
+        flex-shrink: 0;
+      }
+      /* ===== 确保卡片网格撑满 ===== */
+      .exam-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        width: 100%;
+      }
+      /* ===== 其余样式保持不变 ===== */
       .brand {
         font-size: 24px;
       }
@@ -80,15 +100,6 @@
       a {
         font: inherit;
       }
-      .app {
-        width: 100%;
-        max-width: 760px;
-        margin: 0 auto;
-        background: #fff;
-        border: 1px solid #e4eaf1;
-        box-shadow: 0 10px 30px rgba(25, 48, 80, 0.08);
-        padding: 22px;
-      }
       .topbar {
         display: flex;
         align-items: center;
@@ -123,12 +134,6 @@
         color: var(--muted);
         line-height: 1.6;
         margin-bottom: 18px;
-      }
-      .exam-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-        width: 100%;
       }
       .exam-card {
         border: 1px solid var(--line);
@@ -1772,6 +1777,7 @@
           align-items: flex-end;
           gap: 2px;
         }
+        /* ===== 重置按钮放在右上角 ===== */
         .status {
           position: relative !important;
         }
@@ -1790,7 +1796,7 @@
           animation: none !important;
         }
       }
-      /* ---- 页脚样式 ---- */
+      /* ===== 页脚样式（已优化） ===== */
       .app footer {
         margin-top: 24px;
         padding-top: 16px;
@@ -1991,7 +1997,7 @@
         </div>
       </section>
 
-      <!-- ==================== 页脚（已优化） ==================== -->
+      <!-- ==================== 页脚 ==================== -->
       <footer>
         <p style="font-weight: 600; color: #667788; margin-bottom: 4px">
           📢 音频来源
@@ -2066,16 +2072,14 @@
         source: "B站视频：MRI GE核磁共振扫描",
       };
 
-      // 机器声音映射（真实录音）
       const SEQ_AUDIO = {
         hum: "audio/seq_t1.mp3",
         knock: "audio/seq_t2pd.mp3",
         alternate: "audio/seq_tirm.mp3",
         loud: "audio/seq_dwi.mp3",
-        rapid: "audio/seq_dwi.mp3", // DWI 变调播放（见 playMachineSound）
+        rapid: "audio/seq_dwi.mp3",
       };
 
-      // 人声映射（阶段提示）
       const PHASE_VOICE = {
         0: "audio/phase_enter.mp3",
         1: "audio/phase_confirm.mp3",
@@ -2086,7 +2090,6 @@
         6: "audio/phase_done.mp3",
       };
 
-      // 开场白映射（按部位）
       const INTRO_VOICE = {
         brain: "audio/intro_brain.mp3",
         cardiac: "audio/intro_cardiac.mp3",
@@ -2099,7 +2102,6 @@
         general: "audio/intro_general.mp3",
       };
 
-      // ==================== 构建序列数据 ====================
       function buildSequences(type) {
         const special = {
           cardiac: ["配合短暂屏气", "继续保持不动"],
@@ -2158,7 +2160,6 @@
         ];
       }
 
-      // ==================== 检查部位数据 ====================
       const EXAMS = [
         {
           id: "brain",
@@ -2361,12 +2362,10 @@
         },
       ];
 
-      // ==================== DOM 工具 ====================
       const $ = (id) => document.getElementById(id);
       let selected = EXAMS[0];
       let voiceEnabled = true;
 
-      // ==================== 播放状态 ====================
       let state = {
         running: false,
         finished: false,
@@ -2379,11 +2378,8 @@
         token: 0,
       };
 
-      // 当前播放的音频元素
       let currentAudio = null;
-      let currentMachineAudio = null;
 
-      // ==================== 插图 ====================
       function bodyIllustration(organ, title) {
         const marks = {
           general:
@@ -2408,7 +2404,6 @@
         return `<svg viewBox="0 0 136 116" role="img" aria-label="${title}部位示意图"><title>${title}部位示意图</title><circle cx="68" cy="23" r="15" fill="#bad0e5"/><path d="M48 42c7-5 33-5 40 0l11 49c2 9-5 15-14 15H51c-9 0-16-6-14-15Z" fill="#dbe7f1"/><path d="M48 48 30 83M88 48l18 35" stroke="#bad0e5" stroke-width="10" stroke-linecap="round"/>${marks[organ]}</svg>`;
       }
 
-      // ==================== 视图控制 ====================
       function renderGrid() {
         $("examGrid").innerHTML = EXAMS.map(
           (exam) =>
@@ -2472,7 +2467,6 @@
         renderSim();
       }
 
-      // ==================== 音效切换 UI ====================
       const SOUND_MODES = {
         normal: "原声（较响）",
         cotton: "棉花（稍小）",
@@ -2497,7 +2491,6 @@
         $("reselectSound").setAttribute("aria-expanded", "false");
       }
 
-      // ==================== 播放音频工具 ====================
       function playAudio(url, callback, playbackRate = 1.0) {
         stopCurrentAudio();
         if (!url) {
@@ -2535,7 +2528,6 @@
           if (callback) callback();
           return;
         }
-        // rapid 阶段用 DWI 变调（1.3 倍速）
         const rate = id === "rapid" ? 1.3 : 1.0;
         playAudio(url, callback, rate);
       }
@@ -2550,7 +2542,6 @@
         playAudio(url, callback);
       }
 
-      // ==================== 显示控制 ====================
       function showSpeechCaption(text) {
         $("speechCaption").textContent = text;
         $("speechCaption").hidden = false;
@@ -2561,7 +2552,6 @@
         $("speechCaption").textContent = "";
       }
 
-      // ==================== 核心流程 ====================
       function startExperience() {
         if (state.running) return;
         resetState();
@@ -2572,7 +2562,6 @@
 
         state.timer = setInterval(tick, 1000);
 
-        // 播放开场白
         playIntroVoice(() => {
           if (state.running) announceStage(0);
         });
@@ -2588,11 +2577,9 @@
         const text = `阶段${index + 1}：${seq.name}。${seq.announce}`;
         showSpeechCaption(text);
 
-        // 播放人声提示
         playPhaseVoice(index, () => {
           if (!state.running) return;
           state.announcing = false;
-          // 播放机器声音（quiet 和 done 阶段不播放）
           const seqId = seq.id;
           if (seqId !== "quiet" && seqId !== "done") {
             playMachineSound(seqId, () => {
@@ -2648,7 +2635,6 @@
         resetState();
       }
 
-      // ==================== 渲染 ====================
       function renderProcessComparison(stageDurations) {
         const actualSteps = selected.steps.map((text, idx) => ({
           text,
@@ -2793,7 +2779,6 @@
           renderProcessComparison(stageDurations);
       }
 
-      // ==================== 事件绑定 ====================
       renderGrid();
 
       $("detailBack").addEventListener("click", () => {
