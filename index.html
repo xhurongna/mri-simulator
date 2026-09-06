@@ -1438,6 +1438,21 @@
       .progress-segment.sound-stage {
         background: #76c8d1;
       }
+      .progress-track-wrap {
+        padding-top: 18px;
+      }
+      .progress-segment {
+        position: relative;
+      }
+      .progress-segment.sound-stage::before {
+        content: "🔊";
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% + 3px);
+        transform: translateX(-50%);
+        font-size: 10px;
+        line-height: 1;
+      }
       .progress-segment.current.sound-stage {
         background: #0786a8;
       }
@@ -1530,9 +1545,15 @@
         }
         .exam-art {
           height: 82px;
+          width: 100%;
+          margin-left: auto;
+          margin-right: auto;
         }
         .exam-art svg {
+          display: block;
+          width: min(100%, 136px);
           height: 78px;
+          margin: 0 auto;
         }
         .exam-name {
           font-size: 15px;
@@ -1726,19 +1747,6 @@
                 </label>
               </div>
             </div>
-            <!-- 扫描音效开关 -->
-            <div class="sound-summary">
-              <div class="sound-summary-copy">
-                <span class="scan-sound-label">扫描音效</span>
-                <label class="voice-toggle" aria-label="开启或关闭扫描机器声音">
-                  <input id="scanSoundToggle" type="checkbox" checked />
-                  <i class="voice-switch" aria-hidden="true"></i>
-                </label>
-                <span class="scan-sound-status" id="scanSoundStatus"
-                  >已开启</span
-                >
-              </div>
-            </div>
           </div>
           <p class="prompt-note">
             仅用于模拟体验；真实检查进入扫描舱后通常没有逐阶段语音提示。
@@ -1888,7 +1896,7 @@
 
       // 根据部位获取阶段语音
       function getPhaseVoice(index) {
-        const organ = selected.organ;
+        const examId = selected.id;
         // 阶段4（索引3）特殊指令
         if (index === 3) {
           const map = {
@@ -1899,18 +1907,18 @@
             pelvis: "audio/phase4_pelvis.mp3",
             cervical: "audio/phase4_cervical.mp3",
             lumbar: "audio/phase4_lumbar.mp3",
-            spine: "audio/phase4_spine.mp3",
+            "whole-spine": "audio/phase4_spine.mp3",
             general: "audio/phase4_general.mp3",
           };
-          return map[organ] || map.general;
+          return map[examId] || map.general;
         }
         // 阶段6（索引5）特殊指令
         if (index === 5) {
           const map = {
             cardiac: "audio/phase6_cardiac.mp3",
-            spine: "audio/phase6_spine.mp3",
+            "whole-spine": "audio/phase6_spine.mp3",
           };
-          return map[organ] || "audio/phase6_general.mp3";
+          return map[examId] || "audio/phase6_general.mp3";
         }
         // 其他阶段固定
         return FIXED_VOICE[index];
@@ -2191,7 +2199,6 @@
       const $ = (id) => document.getElementById(id);
       let selected = EXAMS[0];
       let voiceEnabled = true;
-      let scanSoundEnabled = true;
 
       let state = {
         running: false,
@@ -2206,6 +2213,8 @@
       };
 
       let currentAudio = null;
+      let currentAudioKind = null;
+      let currentAudioCallback = null;
 
       function bodyIllustration(organ, title) {
         const marks = {
@@ -2291,7 +2300,7 @@
         renderSim();
       }
 
-      function playAudio(url, callback, playbackRate = 1.0) {
+      function playAudio(url, callback, playbackRate = 1.0, kind = "other") {
         stopCurrentAudio();
         if (!url) {
           if (callback) callback();
@@ -2301,39 +2310,47 @@
         audio.playbackRate = playbackRate;
         audio.play().catch(() => {});
         currentAudio = audio;
+        currentAudioKind = kind;
+        currentAudioCallback = callback || null;
         audio.onended = () => {
           if (currentAudio === audio) {
+            const finished = currentAudioCallback;
             currentAudio = null;
-            if (callback) callback();
+            currentAudioKind = null;
+            currentAudioCallback = null;
+            if (finished) finished();
           }
         };
         audio.onerror = () => {
           if (currentAudio === audio) {
+            const finished = currentAudioCallback;
             currentAudio = null;
-            if (callback) callback();
+            currentAudioKind = null;
+            currentAudioCallback = null;
+            if (finished) finished();
           }
         };
       }
 
-      function stopCurrentAudio() {
+      function stopCurrentAudio(complete = false) {
         if (currentAudio) {
+          const finished = currentAudioCallback;
           currentAudio.pause();
           currentAudio = null;
+          currentAudioKind = null;
+          currentAudioCallback = null;
+          if (complete && finished) finished();
         }
       }
 
       function playMachineSound(id, callback) {
-        if (!scanSoundEnabled) {
-          if (callback) callback();
-          return;
-        }
         const url = SEQ_AUDIO[id];
         if (!url) {
           if (callback) callback();
           return;
         }
         const rate = id === "rapid" ? 1.3 : 1.0;
-        playAudio(url, callback, rate);
+        playAudio(url, callback, rate, "machine");
       }
 
       function playPhaseVoice(index, callback) {
@@ -2342,7 +2359,7 @@
           return;
         }
         const url = getPhaseVoice(index);
-        playAudio(url, callback);
+        playAudio(url, callback, 1.0, "voice");
       }
 
       function playIntroVoice(callback) {
@@ -2350,8 +2367,8 @@
           if (callback) callback();
           return;
         }
-        const url = INTRO_VOICE[selected.organ] || INTRO_VOICE.general;
-        playAudio(url, callback);
+        const url = INTRO_VOICE[selected.id] || INTRO_VOICE.general;
+        playAudio(url, callback, 1.0, "voice");
       }
 
       function showSpeechCaption(text) {
@@ -2534,21 +2551,6 @@
           ? selected.sequences.length
           : state.index;
 
-        // 更新扫描音效开关状态：只有扫描阶段且体验运行时才可用
-        const isScanStage = seq && seq.id !== "quiet" && seq.id !== "done";
-        const scanToggle = document.getElementById("scanSoundToggle");
-        if (scanToggle) {
-          scanToggle.disabled = !isScanStage || !state.running;
-          const statusEl = document.getElementById("scanSoundStatus");
-          if (statusEl) {
-            if (scanToggle.disabled) {
-              statusEl.textContent = "—";
-            } else {
-              statusEl.textContent = scanToggle.checked ? "已开启" : "已关闭";
-            }
-          }
-        }
-
         $("progressSegments").innerHTML = selected.sequences
           .map((item, i) => {
             const hasMachineSound = item.id !== "quiet" && item.id !== "done";
@@ -2632,16 +2634,32 @@
 
       $("voiceToggle").addEventListener("change", function () {
         voiceEnabled = this.checked;
-      });
-
-      $("scanSoundToggle").addEventListener("change", function () {
-        scanSoundEnabled = this.checked;
-        // 如果关闭扫描音效且当前正在播放，则停止
-        if (!scanSoundEnabled && currentAudio) {
-          // 仅停止声音，不影响流程
-          currentAudio.pause();
-          currentAudio = null;
-          // 注意：不触发回调，避免干扰流程，用户会听到声音中断
+        if (!voiceEnabled && currentAudioKind === "voice") {
+          stopCurrentAudio(true);
+          return;
+        }
+        if (
+          voiceEnabled &&
+          state.running &&
+          !state.finished &&
+          !state.announcing
+        ) {
+          const index = state.index;
+          const seq = selected.sequences[index];
+          state.announcing = true;
+          stopCurrentAudio();
+          showSpeechCaption(seq.announce);
+          renderSim();
+          playPhaseVoice(index, () => {
+            if (!state.running || state.index !== index) return;
+            state.announcing = false;
+            if (seq.id !== "quiet" && seq.id !== "done") {
+              playMachineSound(seq.id, () => {
+                if (state.running) renderSim();
+              });
+            }
+            renderSim();
+          });
         }
       });
 
